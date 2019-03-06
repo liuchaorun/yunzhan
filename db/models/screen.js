@@ -19,10 +19,13 @@ module.exports = (sequelize, DataType) => {
         },
     }, {
         associate: (models) => {
-            let {Screen, Resource} = models;
+            let {Screen, Resource, ScreenLog} = models;
 
             Screen.hasOne(Resource);
             Resource.belongsTo(Screen);
+
+            Screen.hasMany(ScreenLog);
+            ScreenLog.belongsTo(Screen);
         }
     });
 };

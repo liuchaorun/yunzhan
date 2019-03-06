@@ -13,9 +13,13 @@ module.exports = (sequelize, DataType) => {
             type: DataType.STRING(64),
             allowNull: false,
         },
+        loginTime: DataType.DATE,
+        loginIp: DataType.STRING,
+        lastLoginTime: DataType.DATE,
+        lastLoginIp: DataType.STRING,
     }, {
         associate: (models) => {
-            let {User, File, Tag, Screen, Resource} = models;
+            let {User, File, Tag, Screen, Resource, ScreenLog} = models;
 
             User.hasMany(File);
             File.belongsTo(User);
@@ -28,6 +32,9 @@ module.exports = (sequelize, DataType) => {
 
             User.hasMany(Resource);
             Resource.belongsTo(User);
+
+            User.hasMany(ScreenLog);
+            ScreenLog.belongsTo(User);
         }
     });
 };

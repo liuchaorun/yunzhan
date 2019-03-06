@@ -1,6 +1,7 @@
 const NAMESPACE = require('../Namespace/index');
 const account = require('../services/account');
 const returns = require('../libs/return');
+const utils = require('../libs/utils');
 
 exports.getVerificationCode = async (ctx) => {
     ctx.checkBody(NAMESPACE.ACCOUNT.ACCOUNT.EMAIL).notEmpty();
@@ -12,7 +13,8 @@ exports.getVerificationCode = async (ctx) => {
         ctx.returns(returns.code.REJECT_REQUEST, {msg:'邮箱已被注册'});
     } else {
         ctx.session.code = code;
-        ctx.returns(null);
+        utils.sendEmail(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], code);
+        ctx.returns({});
     }
 };
 
@@ -24,7 +26,7 @@ exports.signUp = async (ctx) => {
         return;
     }
     if (Object.prototype.hasOwnProperty.call(ctx.session, 'code') && code === ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE]) {
-        await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.PASSWORD]);
+        await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.PASSWORD], ctx.request.ip);
         ctx.returns({});
     } else {
         ctx.returns(returns.code.PARAM_ERROR, {msg: '验证码错误'});
@@ -42,7 +44,7 @@ exports.login = async (ctx) => {
     if (await account.checkUserExist(email) === 0) {
         ctx.returns(returns.code.NOT_FOUND, {});
     } else {
-        let user = await account.login(email, password);
+        let user = await account.login(email, password, ctx.request.ip);
         if (user.length === 0) {
             ctx.returns(returns.code.PARAM_ERROR, {});
         } else {

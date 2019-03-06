@@ -2,7 +2,6 @@ const env = process.env.NODE_ENV || 'development';
 const path = require('path');
 const root = path.resolve(__dirname, '../');
 const logDir = path.join(root, 'log');
-const Store = require("../libs/redis");
 
 module.exports = {
     env,
@@ -50,7 +49,6 @@ module.exports = {
         signed: true, /** (boolean) signed or not (default true) */
         rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
         renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
-        store: new Store(),
     },
     log: {
         root: logDir,
@@ -66,7 +64,7 @@ module.exports = {
     },
     mailOptions : {
         from: '"Messenger" <pobooks@126.com>',
-        to: ctx.request.body.email,
+        to: '',
         subject: '云展验证码',
         text: '云展注册验证码:',
     }

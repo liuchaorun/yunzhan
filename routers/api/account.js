@@ -1,7 +1,7 @@
 const account = require('../../controllers/account');
 
 module.exports = (router) => {
-    let prefix = (url) => `/account/${url}`;
+    let prefix = (url) => `/server/account/${url}`;
 
     router.post(prefix('getVerificationCode'), account.getVerificationCode);
     router.post(prefix('forgetPassword'), account.forgetPassword);

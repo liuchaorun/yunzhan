@@ -21,10 +21,11 @@ exports.autoImport = (nextPath,callback) => {
     }
 };
 
-exports.sendEmail = (code) => {
+exports.sendEmail = (email, code) => {
     return new Promise((resolve, reject) => {
         let mailOptions = config.mailOptions;
         mailOptions.text += code;
+        mailOptions.to = email;
         nodemailer.createTransport(config.email).sendMail(mailOptions, (error, info) => {
             if (error) {
                 reject(error);
@@ -35,3 +36,8 @@ exports.sendEmail = (code) => {
 };
 
 exports.generateCode = () => Math.floor(Math.random() * 9000 + 1000);
+
+exports.isOnline = (last) => {
+    let now = (new Date()).getTime();
+    return (now - last.getTime()) <= 1000 * 60 * 5;
+};

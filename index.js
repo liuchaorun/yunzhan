@@ -5,12 +5,13 @@ const router = require('./routers/index');
 const middlewares = require('./middlewares/index');
 const session = require('koa-session');
 const config = require('./conf/config');
-
+const Store = require('./libs/redis');
 
 const app = new Koa();
 
 app.keys = ['im a newer secret', 'i like turtle'];
-app.use(session(config.sessionConfig,app));
+config.sessionConfig.store = new Store();
+app.use(session(,app));
 
 app.use(koaBody({
     multipart: true,

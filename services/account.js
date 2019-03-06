@@ -15,10 +15,12 @@ exports.getVerificationCode = async (email) => {
     return utils.generateCode();
 };
 
-exports.signUp = async (email, password) => {
+exports.signUp = async (email, password, ip) => {
     await User.create({
         email,
         password,
+        loginTime: new Date(),
+        loginIp: ip
     });
 };
 
@@ -30,13 +32,21 @@ exports.checkUserExist = async (email) => {
     })
 };
 
-exports.login = async (email, password) => {
-    return await User.findOne({
+exports.login = async (email, password, ip) => {
+    let user = await User.findOne({
         where: {
             email,
             password,
         }
-    })
+    });
+    let lastLoginIp = user.loginIp;
+    let lastLoginTime = user.loginTime;
+    await user.update({
+        loginIp: ip,
+        loginTime: new Date(),
+        lastLoginIp,
+        lastLoginTime,
+    });
 };
 
 
