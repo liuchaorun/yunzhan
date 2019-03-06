@@ -1,0 +1,4 @@
+{"name":"bunyan","hostname":"lcr-pc","pid":3901,"level":30,"msg":"[404] /admin/test/1","time":"2019-02-26T12:01:47.093Z","v":0}
+{"name":"bunyan","hostname":"lcr-pc","pid":3901,"level":30,"msg":"[404] /admin/test/1","time":"2019-02-26T12:01:47.777Z","v":0}
+{"name":"bunyan","hostname":"lcr-pc","pid":4534,"level":30,"msg":"[404] /public/signup","time":"2019-02-26T12:07:33.211Z","v":0}
+{"name":"bunyan","hostname":"lcr-pc","pid":5874,"level":30,"msg":"[404] /public/a","time":"2019-02-26T12:20:16.649Z","v":0}

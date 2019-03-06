@@ -1,0 +1,25 @@
+{
+  "name": "yunzhan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "migrate": "node ./db/migrate.js",
+    "test": "nodemon ./bin/www.js"
+  },
+  "dependencies": {
+    "sequelize": "^4.42.0",
+    "bunyan": "^1.8.12",
+    "pg": "^7.8.1",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "koa-body": "^4.0.8",
+    "koa-validate": "^1.0.7",
+    "ioredis": "^4.6.2",
+    "koa-session": "^5.10.1",
+    "nodemailer": "^5.1.1",
+    "nodemon": "^1.18.10"
+  },
+  "author": "lcr",
+  "license": "MIT"
+}
