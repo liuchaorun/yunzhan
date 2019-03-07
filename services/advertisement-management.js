@@ -1,10 +1,7 @@
 const db = require('../db/index');
 const NAMESPACE = require('../Namespace/index');
-const utils = require('../libs/utils');
-const Store = require('../libs/redis');
 const path = require('path');
 const fs = require('fs');
-const screenRedis = new Store();
 const config = require('../conf/config');
 
 const { User, File } = db.models;
