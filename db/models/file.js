@@ -19,11 +19,9 @@ module.exports = (sequelize, DatType) => {
         },
         qrCodeUrl: {
             type: DatType.TEXT,
-            allowNull: false,
         },
         qrCodePosition: {
             type: DatType.INTEGER,
-            allowNull: false,
         },
         size: DatType.INTEGER,
     }, {});

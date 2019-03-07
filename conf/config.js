@@ -67,5 +67,11 @@ module.exports = {
         to: '',
         subject: '云展验证码',
         text: '云展注册验证码:',
-    }
+    },
+    filePath: {
+        imagesPath: path.join(root, 'files', 'images'),
+        videosPath: path.join(root, 'files', 'videos')
+    },
+    protocol: 'http',
+    domain: '127.0.0.1:3000'
 };
