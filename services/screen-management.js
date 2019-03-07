@@ -1,8 +1,10 @@
 const db = require('../db/index');
 const NAMESPACE = require('../Namespace/index');
 const utils = require('../libs/utils');
+const Store = require('../libs/redis');
+const screenRedis = new Store();
 
-const { User } = db.models;
+const { User, Screen, Resource } = db.models;
 
 exports.getBasicInfo = async (id) => {
     let user = await User.findOne({
@@ -74,3 +76,174 @@ exports.getScreenList = async (id) => {
     }
 };
 
+exports.unbindResourcePack = async (id, screenIds) => {
+    let user = await User.findOne({
+        where: {
+            id,
+        }
+    });
+    let returnCode = 200;
+    await db.transaction((t) => {
+        return Promise.all(screenIds.map(async (screenId) => {
+            let secreen = await Screen.findOne({
+                where: {
+                    id: screenId,
+                }
+            });
+            if (screen === null) {
+                returnCode = 404;
+                throw new Error('screen not exists');
+            }
+            if (await user.hasScreen(screen)) {
+                let resource = await secreen.getResource();
+                await resource.removeResource(resource, {transaction: t});
+            } else {
+                returnCode = 403;
+                throw new Error('some ')
+            }
+        }));
+    });
+    return returnCode;
+};
+
+exports.addScreen = async (id, screenUuid) => {
+    let screen = await Screen.findOne({
+        where: {
+            uuid: screenUuid,
+        }
+    });
+    if (screen !== null) {
+        let user = await User.findOne({
+            where: {
+                id,
+            }
+        });
+        await user.addScreen(screen);
+        return 200;
+    }
+    return 404;
+};
+
+exports.deleteScreen = async (id, screenIds) => {
+    let returnCode = 200;
+    let user = await User.findOne({
+        where: {
+            id,
+        }
+    });
+    await db.transaction((t) => {
+        return Promise.all(screenIds.map(async (screenId) => {
+            let screen = await Screen.findOne({
+                where: {
+                    id: screenId
+                }
+            });
+            if (screen === null) {
+                returnCode = 404;
+                throw new Error('screen not exist');
+            }
+            if (await user.hasScreen(screen)) {
+                await user.removeScreen(screen, {transaction: t});
+            } else {
+                returnCode = 403;
+                throw new Error('user do not have this screen');
+            }
+        }));
+    });
+    return returnCode;
+};
+
+exports.startScreen = async (id, screenIds) => {
+    let user = await User.findOne({
+        where: {
+            id,
+        }
+    });
+    let returnCode = 200;
+    let data = [];
+    await Promise.all(screenIds.map(async (screenId) => {
+        let screen = await Screen.findOne({
+            where: {
+                id: screenId,
+            }
+        });
+        if (screen === null) {
+            returnCode = 404;
+        }
+        if (await user.hasScreen(screen)) {
+            data.push(screen.id)
+        } else {
+            returnCode = 403;
+        }
+    }));
+    if (returnCode === 200) {
+        for (let id of data) {
+            await screenRedis.set(`screen:${id}`, 'start',100*60*60*24);
+        }
+    }
+    return returnCode;
+};
+
+exports.stopScreen = async (id, screenIds) => {
+    let user = await User.findOne({
+        where: {
+            id,
+        }
+    });
+    let returnCode = 200;
+    let data = [];
+    await Promise.all(screenIds.map(async (screenId) => {
+        let screen = await Screen.findOne({
+            where: {
+                id: screenId,
+            }
+        });
+        if (screen === null) {
+            returnCode = 404;
+        }
+        if (await user.hasScreen(screen)) {
+            data.push(screen.id)
+        } else {
+            returnCode = 403;
+        }
+    }));
+    if (returnCode === 200) {
+        for (let id of data) {
+            await screenRedis.set(`screen:${id}`, 'stop',100*60*60*24);
+        }
+    }
+    return returnCode;
+};
+
+exports.bindResourcePack = async (id, screenIds, resourceId) => {
+    let user = await User.findOne({
+        where: {
+            id,
+        }
+    });
+    let resource = await Resource.findOne({
+        where: {
+            id: resourceId
+        }
+    });
+    let returnCode = 200;
+    await db.transaction((t) => {
+        return Promise.all(screenIds.map(async (screenId) => {
+            let screen = await Screen.findOne({
+                where: {
+                    id: screenId,
+                }
+            });
+            if (screen === null) {
+                returnCode = 404;
+                throw new Error('screen not exist');
+            }
+            if (await user.hasScreen(screen)) {
+                await screen.addReource(resource, {transaction: t});
+            } else {
+                returnCode = 403;
+                throw new Error('user do not have this screen');
+            }
+        }));
+    })
+};
