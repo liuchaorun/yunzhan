@@ -90,6 +90,9 @@ exports.getAdvertisementList = async (id) => {
             [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: pathToUrl(file.path)
         })
     }
+    return {
+        [NAMESPACE.ADVERTISEMENT_MANAGEMENT.LIST.ADVERTISEMENT]: list,
+    };
 };
 
 exports.getAdvertisementInfo = async (id, fileId) => {

@@ -11,7 +11,8 @@ const app = new Koa();
 
 app.keys = ['im a newer secret', 'i like turtle'];
 config.sessionConfig.store = new Store();
-app.use(session(,app));
+
+app.use(session(config.sessionConfig,app));
 
 app.use(koaBody({
     multipart: true,
