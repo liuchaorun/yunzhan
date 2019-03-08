@@ -245,5 +245,6 @@ exports.bindResourcePack = async (id, screenIds, resourceId) => {
                 throw new Error('user do not have this screen');
             }
         }));
-    })
+    });
+    return returnCode;
 };
