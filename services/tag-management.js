@@ -1,8 +1,5 @@
 const db = require('../db/index');
 const NAMESPACE = require('../Namespace/index');
-const path = require('path');
-const fs = require('fs');
-const config = require('../conf/config');
 
 const { User, Tag } = db.models;
 

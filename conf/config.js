@@ -70,7 +70,8 @@ module.exports = {
     },
     filePath: {
         imagesPath: path.join(root, 'files', 'images'),
-        videosPath: path.join(root, 'files', 'videos')
+        videosPath: path.join(root, 'files', 'videos'),
+        jsonPath: path.join(root, 'file', 'json')
     },
     protocol: 'http',
     domain: '127.0.0.1:3000'
