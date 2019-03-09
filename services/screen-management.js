@@ -65,7 +65,7 @@ exports.getScreenList = async (id) => {
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.ID]: screen.id,
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.UUID]: screen.uuid,
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.NAME]: screen.name,
-            [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.IS_RUNNING]: screenData.status && utils.isOnline(screen.lastLoginTime)
+            [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.IS_RUNNING]: screenData.status && utils.isOnline(screen.lastActiveTime)
         };
         let resource = await screen.getResource();
         if (resource !== null) {
