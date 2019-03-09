@@ -26,7 +26,7 @@ exports.signUp = async (ctx) => {
         return;
     }
     if (Object.prototype.hasOwnProperty.call(ctx.session, 'code') && ctx.session.code === ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE]) {
-        await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.PASSWORD], ctx.request.ip);
+        await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.PASSWORD], ctx.request.ip);
         ctx.returns({});
     } else {
         ctx.returns(returns.code.REJECT_REQUEST, {msg: '验证码错误'});
