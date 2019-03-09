@@ -25,7 +25,7 @@ exports.signUp = async (ctx) => {
     if (ctx.returnIfParamsError()) {
         return;
     }
-    if (Object.prototype.hasOwnProperty.call(ctx.session, 'code') && code === ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE]) {
+    if (Object.prototype.hasOwnProperty.call(ctx.session, 'code') && ctx.session.code === ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE]) {
         await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.PASSWORD], ctx.request.ip);
         ctx.returns({});
     } else {
