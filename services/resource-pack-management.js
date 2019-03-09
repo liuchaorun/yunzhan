@@ -93,7 +93,7 @@ exports.submitNewResourcePack = async (id, name, adIds, tagIds) => {
             return Promise.all(operators);
         });
     });
-    fs.writeFileSync(path.join(config.filePath.jsonPath, `${resourceId}.json`), JSON.stringify(configJson));
+    fs.writeFileSync(path.join(config.filePath.jsonPath, `${resourceId}.json`), JSON.stringify({ad: configJson}));
 };
 
 exports.getResourcePackList = async (id) => {
@@ -397,7 +397,7 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
                 return Promise.all(operators);
             });
         });
-        fs.writeFileSync(path.join(config.filePath.jsonPath, `${resourceId}.json`), JSON.stringify(configJson));
+        fs.writeFileSync(path.join(config.filePath.jsonPath, `${resourceId}.json`), JSON.stringify({ad: configJson}));
         let screens = await resource.getScreens();
         await Promise.all(screens.map(async (screen) => {
             let screenData = await screenRedis.get(`screen:${screen.id}`);

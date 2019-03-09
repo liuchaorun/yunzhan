@@ -16,7 +16,7 @@ module.exports = {
         development: {
             name: 'postgres',
             username: 'postgres',
-            pwd: 'postgres',
+            pwd: 'postgresql',
             host: '127.0.0.1',
             database: 'yunzhan',
         },
