@@ -19,15 +19,15 @@ exports.uploadVideo = async (ctx) => {
 };
 
 exports.uploadImage = async (ctx) => {
-    ctx.checkFile(NAMESPACE.ADVERTISEMENT_MANAGEMENT.VIDEO.FILE);
+    ctx.checkFile(NAMESPACE.ADVERTISEMENT_MANAGEMENT.IMAGE.FILE);
     if (ctx.returnIfParamsError()) {
         return;
     }
     let userId = ctx.session.userId;
-    let file = ctx.request.body.files[NAMESPACE.ADVERTISEMENT_MANAGEMENT.VIDEO.FILE];
-    let name = ctx.request.body.fields[NAMESPACE.ADVERTISEMENT_MANAGEMENT.VIDEO.NAME];
-    let qrCodeUrl = ctx.request.body.fields[NAMESPACE.ADVERTISEMENT_MANAGEMENT.VIDEO.NAME];
-    let qrCodePosition = ctx.request.body.fields[NAMESPACE.ADVERTISEMENT_MANAGEMENT.VIDEO.NAME];
+    let file = ctx.request.body.files[NAMESPACE.ADVERTISEMENT_MANAGEMENT.IMAGE.FILE];
+    let name = ctx.request.body.fields[NAMESPACE.ADVERTISEMENT_MANAGEMENT.IMAGE.NAME];
+    let qrCodeUrl = ctx.request.body.fields[NAMESPACE.ADVERTISEMENT_MANAGEMENT.IMAGE.QR_CODE_URL];
+    let qrCodePosition = ctx.request.body.fields[NAMESPACE.ADVERTISEMENT_MANAGEMENT.IMAGE.QR_CODE_POSITION];
     await advertisementManagement.uploadImage(userId, file, qrCodeUrl, qrCodePosition, name);
     ctx.returns({});
 };
