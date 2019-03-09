@@ -65,8 +65,8 @@ module.exports = {
     mailOptions : {
         from: '"Messenger" <pobooks@126.com>',
         to: '',
-        subject: '',
-        text: '云展注册验证码:',
+        subject: '云展注册验',
+        text: '',
     },
     filePath: {
         imagesPath: path.join(root, 'files', 'images'),
