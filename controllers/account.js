@@ -45,7 +45,7 @@ exports.login = async (ctx) => {
         ctx.returns(returns.code.NOT_FOUND, {});
     } else {
         let user = await account.login(email, password, ctx.request.ip);
-        if (user.length === 0) {
+        if (user === null) {
             ctx.returns(returns.code.PARAM_ERROR, {});
         } else {
             ctx.session.userId = user.id;
