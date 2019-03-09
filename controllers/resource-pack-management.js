@@ -27,51 +27,51 @@ exports.getResourcePackList = async (ctx) => {
 };
 
 exports.getResourcePackTagList = async (ctx) => {
-    ctx.checkParams(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
+    ctx.checkQuery(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let resourceId = ctx.params[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
+    let resourceId = ctx.request.query[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     let userId = ctx.session.userId;
     ctx.returns(await resourcePackManagement.getResourcePackTagList(userId, resourceId));
 };
 
 exports.getResourcePackAdvertisementList = async (ctx) => {
-    ctx.checkParams(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
+    ctx.checkQuery(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let resourceId = ctx.params[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
+    let resourceId = ctx.request.query[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     let userId = ctx.session.userId;
     ctx.returns(await resourcePackManagement.getResourcePackAdvertisementList(userId, resourceId));
 };
 
 exports.getResourcePackScreenList = async (ctx) => {
-    ctx.checkParams(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
+    ctx.checkQuery(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let resourceId = ctx.params[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
+    let resourceId = ctx.request.query[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     let userId = ctx.session.userId;
     ctx.returns(await resourcePackManagement.getResourcePackScreenList(userId, resourceId));
 };
 
 exports.getResourcePackUnbindingTagList = async (ctx) => {
-    ctx.checkParams(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
+    ctx.checkQuery(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let resourceId = ctx.params[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
+    let resourceId = ctx.request.query[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     let userId = ctx.session.userId;
     ctx.returns(await resourcePackManagement.getResourcePackUnbindingTagList(userId, resourceId));
 };
 
 exports.getResourcePackUnbindingAdvertisementList = async (ctx) => {
-    ctx.checkParams(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
+    ctx.checkQuery(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let resourceId = ctx.params[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
+    let resourceId = ctx.request.query[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     let userId = ctx.session.userId;
     ctx.returns(await resourcePackManagement.getResourcePackUnbindingAdvertisementList(userId, resourceId));
 };

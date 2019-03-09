@@ -24,13 +24,15 @@ module.exports = async (ctx, next) => {
         ctx.body = returns.msgWrapper(code, data);
     };
 
-    if (!/^\/account\//.test(ctx.request.url)) {
-        if (!(Object.prototype.hasOwnProperty.call(ctx.session, 'userId') && ctx.session.userId !== null)) {
-            ctx.returns(returns.code.INVALID_SESSION, {});
-            ctx.returns = null;
-            ctx.returnIfParamsError = null;
-            ctx.returnParamsError = null;
-            return;
+    if (/^\/server\//.test(ctx.request.url)) {
+        if (/^\/server\/admin\//.test(ctx.request.url)) {
+            if (!(Object.prototype.hasOwnProperty.call(ctx.session, 'userId') && ctx.session.userId !== null)) {
+                ctx.returns(returns.code.INVALID_SESSION, {});
+                ctx.returns = null;
+                ctx.returnIfParamsError = null;
+                ctx.returnParamsError = null;
+                return;
+            }
         }
     }
 

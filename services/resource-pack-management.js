@@ -4,6 +4,9 @@ const config = require('../conf/config');
 const fs = require('fs');
 const path = require('path');
 const utils = require('../libs/utils');
+const Store = require('../libs/redis');
+const screenRedis = new Store();
+const qr = require('qr-image');
 
 const { User, Resource, File, Tag } = db.models;
 
@@ -49,12 +52,19 @@ exports.submitNewResourcePack = async (id, name, adIds, tagIds) => {
                     });
                     await resource.addFile(ad, {transaction: t});
                     if (ad.type === 0) {
+                        let userImagePath = path.join(config.filePath.imagesPath, `${user.id}`);
+                        if (!fs.existsSync(userImagePath)) {
+                            fs.mkdirSync(userImagePath);
+                        }
+                        const string = qr.imageSync(`${config.protocol}://${config.domain}/public/link?url=${ad.qrCodeUrl}&resourceId=${resourceId}`, { type: 'png' });
+                        const qrCodePath = path.join(userImagePath, `qr-code-${resourceId}.png`);
+                        await fs.writeFileSync(qrCodePath, string);
                         configJson.push({
                             id: ad.id,
                             url: pathToUrl(ad.path),
                             type: ad.type,
                             time: 20,
-                            qrCodeUrl: ad.qrCodeUrl,
+                            qrCodeUrl: pathToUrl(qrCodePath),
                             qrCodePosition: ad.qrCodePosition
                         })
                     } else {
@@ -346,12 +356,19 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
                         });
                         await resource.addFile(ad, {transaction: t});
                         if (ad.type === 0) {
+                            let userImagePath = path.join(config.filePath.imagesPath, `${user.id}`);
+                            if (!fs.existsSync(userImagePath)) {
+                                fs.mkdirSync(userImagePath);
+                            }
+                            const string = qr.imageSync(`${config.protocol}://${config.domain}/public/link?url=${ad.qrCodeUrl}&resourceId=${resourceId}`, { type: 'png' });
+                            const qrCodePath = path.join(userImagePath, `qr-code-${resourceId}.png`);
+                            await fs.writeFileSync(qrCodePath, string);
                             configJson.push({
                                 id: ad.id,
                                 url: pathToUrl(ad.path),
                                 type: ad.type,
                                 time: 20,
-                                qrCodeUrl: ad.qrCodeUrl,
+                                qrCodeUrl: pathToUrl(qrCodePath),
                                 qrCodePosition: ad.qrCodePosition
                             })
                         } else {
@@ -381,6 +398,13 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
             });
         });
         fs.writeFileSync(path.join(config.filePath.jsonPath, `${resourceId}.json`), JSON.stringify(configJson));
+        let screens = await resource.getScreens();
+        await Promise.all(screens.map(async (screen) => {
+            let screenData = await screenRedis.get(`screen:${screen.id}`);
+            screenData.update = (new Date()).getTime();
+            screenData.url = pathToUrl(resource.path);
+            await screenRedis.set(`screen:${screen.id}`, screenData, 1000 * 60 * 60 * 24);
+        }));
     } else {
         return 403;
     }

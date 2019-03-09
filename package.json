@@ -18,7 +18,8 @@
     "ioredis": "^4.6.2",
     "koa-session": "^5.10.1",
     "nodemailer": "^5.1.1",
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "qr-image": "^3.2.0"
   },
   "author": "lcr",
   "license": "MIT"

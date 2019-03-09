@@ -6,6 +6,8 @@ const screenRedis = new Store();
 
 const { User, Screen, Resource } = db.models;
 
+let pathToUrl = (p) => `${config.protocol}://${config.domain}${/^\/files([\s\S]+)/.exec(p)[1]}`;
+
 exports.getBasicInfo = async (id) => {
     let user = await User.findOne({
         where: {
@@ -97,6 +99,10 @@ exports.unbindResourcePack = async (id, screenIds) => {
             if (await user.hasScreen(screen)) {
                 let resource = await secreen.getResource();
                 await resource.removeResource(resource, {transaction: t});
+                let screenData = await screenRedis.get(`screen:${screenId}`);
+                screenData.status = false;
+                screenData.url = null;
+                await screenRedis.set(`screen:${screenId}`, screenData, 1000 * 60 * 60 * 24);
             } else {
                 returnCode = 403;
                 throw new Error('some ')
@@ -119,6 +125,9 @@ exports.addScreen = async (id, screenUuid) => {
             }
         });
         await user.addScreen(screen);
+        let screenData = await screenRedis.get(`screen:${screen.id}`);
+        screenData.bind = true;
+        await screenRedis.set(`screen:${screen.id}`, screenData, 1000 * 60 * 60 * 24);
         return 200;
     }
     return 404;
@@ -144,6 +153,9 @@ exports.deleteScreen = async (id, screenIds) => {
             }
             if (await user.hasScreen(screen)) {
                 await user.removeScreen(screen, {transaction: t});
+                let screenData = await screenRedis.get(`screen:${screenId}`);
+                screenData.bind = false;
+                await screenRedis.set(`screen:${screenId}`, screenData, 1000 * 60 * 60 * 24);
             } else {
                 returnCode = 403;
                 throw new Error('user do not have this screen');
@@ -178,7 +190,17 @@ exports.startScreen = async (id, screenIds) => {
     }));
     if (returnCode === 200) {
         for (let id of data) {
-            await screenRedis.set(`screen:${id}`, 'start',100*60*60*24);
+            let screen = await await Screen.findOne({
+                where: {
+                    id,
+                }
+            });
+            let resource = await screen.getResource();
+            let screenData = await screenRedis.get(`screen:${id}`);
+            screenData.status = true;
+            screenData.update = (new Date()).getTime();
+            screenData.url = pathToUrl(resource.path);
+            await screenRedis.set(`screen:${id}`, screenData, 1000 * 60 * 60 * 24);
         }
     }
     return returnCode;
@@ -209,7 +231,9 @@ exports.stopScreen = async (id, screenIds) => {
     }));
     if (returnCode === 200) {
         for (let id of data) {
-            await screenRedis.set(`screen:${id}`, 'stop',100*60*60*24);
+            let screenData = await screenRedis.get(`screen:${id}`);
+            screenData.status = false;
+            await screenRedis.set(`screen:${id}`, screenData, 1000 * 60 * 60 * 24);
         }
     }
     return returnCode;
