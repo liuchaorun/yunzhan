@@ -29,7 +29,7 @@ exports.signUp = async (ctx) => {
         await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.PASSWORD], ctx.request.ip);
         ctx.returns({});
     } else {
-        ctx.returns(returns.code.PARAM_ERROR, {msg: '验证码错误'});
+        ctx.returns(returns.code.REJECT_REQUEST, {msg: '验证码错误'});
     }
 };
 
