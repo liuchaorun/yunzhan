@@ -21,7 +21,7 @@ exports.getVerificationCode = async (ctx) => {
 exports.signUp = async (ctx) => {
     ctx.checkBody(NAMESPACE.ACCOUNT.ACCOUNT.EMAIL).notEmpty();
     ctx.checkBody(NAMESPACE.ACCOUNT.ACCOUNT.PASSWORD).notEmpty();
-    ctx.checkBody(NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE).notEmpty();
+    ctx.checkBody(NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
