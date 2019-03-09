@@ -8,7 +8,7 @@ module.exports = (router) => {
     let prefix = (url) => `/server/admin/${url}`;
 
     let overviewPrefix = (url)=> prefix(`overview/${url}`);
-    router.get(overviewPrefix('getLoginInfo'), overview.getTagInfo);
+    router.get(overviewPrefix('getLoginInfo'), overview.getLoginInfo);
     router.get(overviewPrefix('getScreenInfo'), overview.getScreenInfo);
     router.get(overviewPrefix('getAdvertisementInfo'), overview.getAdvertisementInfo);
     router.get(overviewPrefix('getResourcePackInfo'), overview.getResourcePackInfo);
