@@ -3,7 +3,7 @@ const tagManagement = require('../services/tag-management');
 
 exports.getBasicInfo = async (ctx) => {
     let userId = ctx.session.userId;
-    ctx.returns(await tagMangement.getBasicInfo(userId));
+    ctx.returns(await tagManagement.getBasicInfo(userId));
 };
 
 exports.submitNewTag = async (ctx) => {
@@ -23,11 +23,11 @@ exports.getTagList = async (ctx) => {
 };
 
 exports.getTagInfo = async (ctx) => {
-    ctx.checkBody(NAMESPACE.TAG_MANAGEMENT.TAG.ID).notEmpty().toInt();
+    ctx.checkQuery(NAMESPACE.TAG_MANAGEMENT.TAG.ID).notEmpty().toInt();
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let tagId = ctx.request.body[NAMESPACE.TAG_MANAGEMENT.TAG.ID];
+    let tagId = ctx.request.query[NAMESPACE.TAG_MANAGEMENT.TAG.ID];
     let userId = ctx.session.userId;
     let data = await tagManagement.getTagInfo(userId, tagId);
     ctx.returns(data.code, data.data);

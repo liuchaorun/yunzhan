@@ -7,6 +7,6 @@ module.exports = (router) => {
     router.post(prefix('forgetPassword'), account.forgetPassword);
     router.post(prefix('signUp'), account.signUp);
     router.post(prefix('login'), account.login);
-    router.post(prefix('verifySession'), account.verifySession);
+    router.get(prefix('verifySession'), account.verifySession);
     router.post(prefix('logout'), account.logout);
 };

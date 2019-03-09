@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataType) => {
     return sequelize.define('Resource', {
         name: {
-            type: DataType.INTEGER,
+            type: DataType.TEXT,
             allowNull: false,
         },
         remarks: {

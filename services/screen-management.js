@@ -3,10 +3,10 @@ const NAMESPACE = require('../Namespace/index');
 const utils = require('../libs/utils');
 const Store = require('../libs/redis');
 const screenRedis = new Store();
+const path = require('path');
+const config = require('../conf/config');
 
 const { User, Screen, Resource } = db.models;
-
-let pathToUrl = (p) => `${config.protocol}://${config.domain}${/^\/files([\s\S]+)/.exec(p)[1]}`;
 
 exports.getBasicInfo = async (id) => {
     let user = await User.findOne({
@@ -17,7 +17,7 @@ exports.getBasicInfo = async (id) => {
     let screens = await user.getScreens();
     let activeNumber = 0;
     for (let screen of screens) {
-        if (utils.isOnline(screen.lastActiveTime)) {
+        if ((await screenRedis.get(`screen:${screen.id}`)).status && utils.isOnline(screen.lastActiveTime)) {
             activeNumber ++;
         }
     }
@@ -60,11 +60,12 @@ exports.getScreenList = async (id) => {
     let screens = await user.getScreens();
     let list = [];
     await Promise.all(screens.map(async (screen, index) => {
+        let screenData = await screenRedis.get(`screen:${screen.id}`);
         let temp = {
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.ID]: screen.id,
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.UUID]: screen.uuid,
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.NAME]: screen.name,
-            [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.IS_RUNNING]: utils.isOnline(screen.lastActiveTime)
+            [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.IS_RUNNING]: screenData.status && utils.isOnline(screen.lastLoginTime)
         };
         let resource = await screen.getResource();
         if (resource !== null) {
@@ -199,7 +200,7 @@ exports.startScreen = async (id, screenIds) => {
             let screenData = await screenRedis.get(`screen:${id}`);
             screenData.status = true;
             screenData.update = (new Date()).getTime();
-            screenData.url = pathToUrl(resource.path);
+            screenData.url = utils.pathToUrl(path.join(config.filePath.jsonPath, `${resource.id}.json`));
             await screenRedis.set(`screen:${id}`, screenData, 1000 * 60 * 60 * 24);
         }
     }
@@ -263,7 +264,11 @@ exports.bindResourcePack = async (id, screenIds, resourceId) => {
                 throw new Error('screen not exist');
             }
             if (await user.hasScreen(screen)) {
-                await screen.addReource(resource, {transaction: t});
+                await screen.setResource(resource, {transaction: t});
+                let screenData = await screenRedis.get(`screen:${screen.id}`);
+                screenData.update = (new Date()).getTime();
+                screenData.url = utils.pathToUrl(path.join(config.filePath.jsonPath, `${resource.id}.json`));
+                await screenRedis.set(`screen:${id}`, screenData, 1000 * 60 * 60 * 24);
             } else {
                 returnCode = 403;
                 throw new Error('user do not have this screen');

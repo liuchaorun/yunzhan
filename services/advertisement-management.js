@@ -3,6 +3,7 @@ const NAMESPACE = require('../Namespace/index');
 const path = require('path');
 const fs = require('fs');
 const config = require('../conf/config');
+const utils = require('../libs/utils');
 
 const { User, File } = db.models;
 
@@ -36,14 +37,14 @@ exports.uploadVideo = async (id, file, name) => {
     });
     let userVideoPath = path.join(config.filePath.videosPath, `${user.id}`);
     if (!fs.existsSync(userVideoPath)) {
-        fs.mkdirSync(userVideoPath);
+        fs.mkdirSync(userVideoPath, {recursive: true});
     }
-    let ext = path.extname(file.path);
+    let ext = path.extname(file.name);
     let destFilePath = path.join(userVideoPath, `${name}${ext}`);
     fs.copyFileSync(file.path, destFilePath);
-    await File.create({
+    await user.createFile({
         name,
-        type: 0,
+        type: 1,
         path: destFilePath,
         size: file.size,
     });
@@ -57,12 +58,12 @@ exports.uploadImage = async (id, file, qrCodeUrl, qrCodePosition, name) => {
     });
     let userImagePath = path.join(config.filePath.imagesPath, `${user.id}`);
     if (!fs.existsSync(userImagePath)) {
-        fs.mkdirSync(userImagePath);
+        fs.mkdirSync(userImagePath, {recursive: true});
     }
-    let ext = path.extname(file.path);
+    let ext = path.extname(file.name);
     let destFilePath = path.join(userImagePath, `${name}${ext}`);
     fs.copyFileSync(file.path, destFilePath);
-    await File.create({
+    await user.createFile({
         name,
         type: 0,
         path: destFilePath,
@@ -72,8 +73,6 @@ exports.uploadImage = async (id, file, qrCodeUrl, qrCodePosition, name) => {
     });
 };
 
-let pathToUrl = (p) => `${config.protocol}://${config.domain}${/^\/files([\s\S]+)/.exec(p)[1]}`;
-
 exports.getAdvertisementList = async (id) => {
     let user = await User.findOne({
         where: {
@@ -81,13 +80,14 @@ exports.getAdvertisementList = async (id) => {
         }
     });
     let files = await user.getFiles();
+
     let list = [];
     for (let file of files) {
         list.push({
             [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.ID]: file.id,
             [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.TYPE]: file.type,
             [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.NAME]: file.name,
-            [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: pathToUrl(file.path)
+            [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: utils.pathToUrl(file.path)
         })
     }
     return {
@@ -113,7 +113,7 @@ exports.getAdvertisementInfo = async (id, fileId) => {
         };
     }
     if (await user.hasFile(file)) {
-        if (file.type === 0) {
+        if (file.type === 1) {
             return {
                 code: 200,
                 data: {
@@ -160,7 +160,8 @@ exports.updateAdvertisementInfo = async (id, fileId, name, qrCodeUrl, qrCodePosi
             name,
             qrCodeUrl,
             qrCodePosition,
-        })
+        });
+        return 200;
     } else {
         return 403;
     }

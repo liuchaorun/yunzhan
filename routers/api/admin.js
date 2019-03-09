@@ -31,6 +31,7 @@ module.exports = (router) => {
     router.post(advertisementManagementPrefix('uploadImage'), advertisementManagement.uploadImage);
     router.get(advertisementManagementPrefix('getAdvertisementList'), advertisementManagement.getAdvertisementList);
     router.get(advertisementManagementPrefix('getAdvertisementInfo'), advertisementManagement.getAdvertisementInfo);
+    router.post(advertisementManagementPrefix('updateAdvertisementInfo'), advertisementManagement.updateAdvertisementInfo);
 
     let tagManagementPrefix = (url) => prefix(`tagManagement/${url}`);
     router.get(tagManagementPrefix('getBasicInfo'), tagManagement.getBasicInfo);

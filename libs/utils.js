@@ -41,3 +41,5 @@ exports.isOnline = (last) => {
     let now = (new Date()).getTime();
     return (now - last.getTime()) <= 1000 * 60 * 5;
 };
+
+exports.pathToUrl = (p) => `${config.protocol}://${config.domain}${/(\/files[\s\S]+)/.exec(p)[1]}`;

@@ -5,8 +5,6 @@ const screenRedis = new Store();
 
 const { Screen } = db.models;
 
-let pathToUrl = (p) => `${config.protocol}://${config.domain}${/^\/files([\s\S]+)/.exec(p)[1]}`;
-
 exports.create = async (uuid) => {
     let screen = await Screen.findOne({
         where: {
@@ -35,7 +33,7 @@ exports.create = async (uuid) => {
                 bind: (await screen.getUser()) !== null,
                 status: utils.isOnline(screen.lastActiveTime),
                 update: screen.lastActiveTime.getTime(),
-                url: pathToUrl(resource.path),
+                url: utils.pathToUrl(resource.path),
             };
             await screenRedis.set(`screen:${screen.id}`, data, 1000 * 60 * 60 * 24);
         }
@@ -50,7 +48,7 @@ exports.poll = async (uuid) => {
     });
     await screen.update({
         lastActiveTime: new Date(),
-    })
+    });
     let data = await screenRedis.get(`screen:${screen.id}`);
     if (data === null) {
         return {

@@ -18,7 +18,7 @@ exports.submitNewResourcePack = async (ctx) => {
     let fileIds = ctx.request.body[NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.ADVERTISEMENT_ID];
     let tagIds = ctx.request.body[NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.TAG_ID];
     await resourcePackManagement.submitNewResourcePack(userId, name, fileIds, tagIds);
-    ctx.return({});
+    ctx.returns({});
 };
 
 exports.getResourcePackList = async (ctx) => {
@@ -43,7 +43,8 @@ exports.getResourcePackAdvertisementList = async (ctx) => {
     }
     let resourceId = ctx.request.query[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     let userId = ctx.session.userId;
-    ctx.returns(await resourcePackManagement.getResourcePackAdvertisementList(userId, resourceId));
+    let data = await resourcePackManagement.getResourcePackAdvertisementList(userId, resourceId);
+    ctx.returns(data);
 };
 
 exports.getResourcePackScreenList = async (ctx) => {
@@ -79,7 +80,7 @@ exports.getResourcePackUnbindingAdvertisementList = async (ctx) => {
 exports.changeResourcePackInfo = async (ctx) => {
     ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID).notEmpty().toInt();
     ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.NAME).notEmpty();
-    ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.DESCRIPTION).notEmpty();
+    ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.DESCRIPTION);
     ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.TAG_ID).notEmpty();
     ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.ADVERTISEMENT_ID).notEmpty();
     if (ctx.returnIfParamsError()) {

@@ -29,8 +29,6 @@ exports.getBasicInfo = async (id) => {
     }
 };
 
-let pathToUrl = (p) => `${config.protocol}://${config.domain}${/^\/files([\s\S]+)/.exec(p)[1]}`;
-
 exports.submitNewResourcePack = async (id, name, adIds, tagIds) => {
     let user = await User.findOne({
         where: {
@@ -47,8 +45,10 @@ exports.submitNewResourcePack = async (id, name, adIds, tagIds) => {
             resourceId = resource.id;
             if (adIds.length > 0) {
                 operators = adIds.map(async (adId) => {
-                    let ad = File.findOne({
-                        id: adId
+                    let ad = await File.findOne({
+                        where: {
+                            id: adId
+                        }
                     });
                     await resource.addFile(ad, {transaction: t});
                     if (ad.type === 0) {
@@ -61,16 +61,16 @@ exports.submitNewResourcePack = async (id, name, adIds, tagIds) => {
                         await fs.writeFileSync(qrCodePath, string);
                         configJson.push({
                             id: ad.id,
-                            url: pathToUrl(ad.path),
+                            url: utils.pathToUrl(ad.path),
                             type: ad.type,
                             time: 20,
-                            qrCodeUrl: pathToUrl(qrCodePath),
+                            qrCodeUrl: utils.pathToUrl(qrCodePath),
                             qrCodePosition: ad.qrCodePosition
                         })
                     } else {
                         configJson.push({
                             id: ad.id,
-                            url: pathToUrl(ad.path),
+                            url: utils.pathToUrl(ad.path),
                             type: ad.type,
                             time: 20,
                         })
@@ -98,15 +98,18 @@ exports.submitNewResourcePack = async (id, name, adIds, tagIds) => {
 
 exports.getResourcePackList = async (id) => {
     let user = await User.findOne({
-        id,
+        where: {
+            id,
+        }
     });
     let resources = await user.getResources();
     let data = [];
     for (let resource of resources) {
+        let tags = await resource.getTags();
         data.push({
             [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID]: resource.id,// 资源包 ID
             [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.NAME]: resource.name,// 资源包名
-            [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.TAG_NAME]: (await resource.getTags())[0].name,// 绑定标签名（取一个就可以）
+            [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.TAG_NAME]: tags.length > 0 ? tags[0].name: null,// 绑定标签名（取一个就可以）
             [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ADVERTISEMENT_AMOUNT]: (await resource.getFiles()).length,// 内含广告数量
             [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.SCREEN_AMOUNT]: (await resource.getScreens()).length,// 绑定屏幕数量
             [NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.DESCRIPTION]: resource.remarks// 资源包备注
@@ -167,7 +170,7 @@ exports.getResourcePackAdvertisementList = async (id, resourceId) => {
     });
     if (resource === null) {
         return {
-            [NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.ADVERTISEMENT]: []
+            [NAMESPACE.ADVERTISEMENT_MANAGEMENT.LIST.ADVERTISEMENT]: []
         }
     }
     if (await user.hasResource(resource)) {
@@ -178,15 +181,15 @@ exports.getResourcePackAdvertisementList = async (id, resourceId) => {
                 [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.ID]: file.id, // 广告的 ID
                 [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.TYPE]: file.type, // 广告类型，枚举值
                 [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.NAME]: file.name, // 文件名
-                [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: pathToUrl(file.path) // 预览 URL
+                [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: utils.pathToUrl(file.path) // 预览 URL
             })
         }
         return {
-            [NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.ADVERTISEMENT]: data
+            [NAMESPACE.ADVERTISEMENT_MANAGEMENT.LIST.ADVERTISEMENT]: data
         }
     } else {
         return {
-            [NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.ADVERTISEMENT]: []
+            [NAMESPACE.ADVERTISEMENT_MANAGEMENT.LIST.ADVERTISEMENT]: []
         }
     }
 };
@@ -304,7 +307,7 @@ exports.getResourcePackUnbindingAdvertisementList = async (id, resourceId) => {
                     [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.ID]: file.id, // 广告的 ID
                     [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.TYPE]: file.type, // 广告类型，枚举值
                     [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.NAME]: file.name, // 文件名
-                    [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: pathToUrl(file.path), // 预览 URL
+                    [NAMESPACE.ADVERTISEMENT_MANAGEMENT.ADVERTISEMENT.URL]: utils.pathToUrl(file.path), // 预览 URL
                 });
             }
         }
@@ -351,8 +354,10 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
                 resourceId = resource.id;
                 if (adIds.length > 0) {
                     operators = adIds.map(async (adId) => {
-                        let ad = File.findOne({
-                            id: adId
+                        let ad = await File.findOne({
+                            where: {
+                                id: adId
+                            }
                         });
                         await resource.addFile(ad, {transaction: t});
                         if (ad.type === 0) {
@@ -365,16 +370,16 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
                             await fs.writeFileSync(qrCodePath, string);
                             configJson.push({
                                 id: ad.id,
-                                url: pathToUrl(ad.path),
+                                url: utils.pathToUrl(ad.path),
                                 type: ad.type,
                                 time: 20,
-                                qrCodeUrl: pathToUrl(qrCodePath),
+                                qrCodeUrl: utils.pathToUrl(qrCodePath),
                                 qrCodePosition: ad.qrCodePosition
                             })
                         } else {
                             configJson.push({
                                 id: ad.id,
-                                url: pathToUrl(ad.path),
+                                url: utils.pathToUrl(ad.path),
                                 type: ad.type,
                                 time: 20,
                             })
@@ -402,7 +407,7 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
         await Promise.all(screens.map(async (screen) => {
             let screenData = await screenRedis.get(`screen:${screen.id}`);
             screenData.update = (new Date()).getTime();
-            screenData.url = pathToUrl(resource.path);
+            screenData.url = utils.pathToUrl(path.join(config.filePath.jsonPath, `${resourceId}.json`));
             await screenRedis.set(`screen:${screen.id}`, screenData, 1000 * 60 * 60 * 24);
         }));
     } else {

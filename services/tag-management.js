@@ -24,7 +24,7 @@ exports.getBasicInfo = async (id) => {
 };
 
 exports.submitNewTag = async (id, name) => {
-    let tag = Tag.findOne({
+    let tag = await Tag.findOne({
         where: {
             name,
         }
@@ -65,7 +65,7 @@ exports.getTagList = async (id) => {
 };
 
 exports.getTagInfo = async (id, tagId) => {
-    let user = User.findOne({
+    let user = await User.findOne({
         where: {
             id,
         }
@@ -109,7 +109,7 @@ exports.changeTagInfo = async (id, tagId, name) => {
             id,
         }
     });
-    let tag = Tag.findOne({
+    let tag = await Tag.findOne({
         where: {
             id: tagId,
         }
