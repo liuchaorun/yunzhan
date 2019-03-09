@@ -24,7 +24,7 @@ exports.autoImport = (nextPath,callback) => {
 exports.sendEmail = (email, code) => {
     return new Promise((resolve, reject) => {
         let mailOptions = config.mailOptions;
-        mailOptions.text += code;
+        mailOptions.text = `云展验证码${code}`;
         mailOptions.to = email;
         nodemailer.createTransport(config.email).sendMail(mailOptions, (error, info) => {
             if (error) {

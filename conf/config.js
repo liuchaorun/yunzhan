@@ -65,7 +65,7 @@ module.exports = {
     mailOptions : {
         from: '"Messenger" <pobooks@126.com>',
         to: '',
-        subject: '云展验证码',
+        subject: '',
         text: '云展注册验证码:',
     },
     filePath: {
