@@ -41,7 +41,7 @@ exports.login = async (email, password, ip) => {
     });
     let lastLoginIp = user.loginIp;
     let lastLoginTime = user.loginTime;
-    await user.update({
+    return await user.update({
         loginIp: ip,
         loginTime: new Date(),
         lastLoginIp,
