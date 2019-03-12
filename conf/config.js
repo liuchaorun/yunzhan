@@ -74,5 +74,5 @@ module.exports = {
         jsonPath: path.join(root, 'files', 'json')
     },
     protocol: 'http',
-    domain: '172.6.8.126'
+    domain: '47.94.234.136'
 };
