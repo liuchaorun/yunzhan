@@ -1,19 +1,6 @@
-const utils = require('../libs/utils');
 const db = require('../db/index');
 
 const {User} = db.models;
-
-exports.getVerificationCode = async (email) => {
-    let isExist = await User.count({
-        where: {
-            email,
-        }
-    });
-    if (isExist === 1) {
-        return 0;
-    }
-    return utils.generateCode();
-};
 
 exports.signUp = async (email, password, ip) => {
     await User.create({

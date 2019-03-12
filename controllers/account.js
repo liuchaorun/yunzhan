@@ -8,14 +8,10 @@ exports.getVerificationCode = async (ctx) => {
     if (ctx.returnIfParamsError()) {
         return;
     }
-    let code = await account.getVerificationCode(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL]);
-    if (code === 0) {
-        ctx.returns(returns.code.REJECT_REQUEST, {msg:'邮箱已被注册'});
-    } else {
-        ctx.session.code = code;
-        utils.sendEmail(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], code);
-        ctx.returns({});
-    }
+    let code = utils.generateCode();
+    ctx.session.code = code;
+    utils.sendEmail(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], code);
+    ctx.returns({});
 };
 
 exports.signUp = async (ctx) => {
@@ -25,8 +21,12 @@ exports.signUp = async (ctx) => {
     if (ctx.returnIfParamsError()) {
         return;
     }
+    if (await account.checkUserExist(NAMESPACE.ACCOUNT.ACCOUNT.EMAIL) === 1) {
+        ctx.returns(returns.code.REJECT_REQUEST, {msg:'邮箱已被注册'});
+        return;
+    }
     if (Object.prototype.hasOwnProperty.call(ctx.session, 'code') && ctx.session.code === ctx.request.body[NAMESPACE.ACCOUNT.VERIFICATION.VERIFICATION_CODE]) {
-        await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.PASSWORD], ctx.request.ip);
+        await account.signUp(ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.EMAIL], ctx.request.body[NAMESPACE.ACCOUNT.ACCOUNT.PASSWORD], ctx.request.headers['x-real-ip']);
         ctx.returns({});
     } else {
         ctx.returns(returns.code.REJECT_REQUEST, {msg: '验证码错误'});
@@ -44,7 +44,7 @@ exports.login = async (ctx) => {
     if (await account.checkUserExist(email) === 0) {
         ctx.returns(returns.code.NOT_FOUND, {});
     } else {
-        let user = await account.login(email, password, ctx.request.ip);
+        let user = await account.login(email, password, ctx.request.headers['x-real-ip']);
         if (user === null) {
             ctx.returns(returns.code.PARAM_ERROR, {});
         } else {
