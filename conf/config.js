@@ -9,14 +9,14 @@ module.exports = {
         production: {
             name: 'postgres',
             username: 'postgres',
-            pwd: 'postgres',
+            password: 'postgres',
             host: '127.0.0.1',
             database: 'yunzhan',
         },
         development: {
             name: 'postgres',
             username: 'postgres',
-            pwd: 'postgres',
+            password: 'postgres',
             host: '127.0.0.1',
             database: 'yunzhan',
         },

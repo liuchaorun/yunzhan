@@ -40,7 +40,7 @@ exports.login = async (email, password, ip) => {
 exports.forgetPassword = async (id, email, newPassword) => {
     let user = await User.findOne({
         where: {
-            id,
+            email,
         }
     });
     if (user.email === email) {
