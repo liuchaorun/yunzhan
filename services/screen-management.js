@@ -9,7 +9,6 @@ const config = require('../conf/config');
 const { User, Screen, Resource } = db.models;
 
 let getScreenRedisData = async (screen, resource) => {
-    console.log(resource.path);
     let data = await screenRedis.get(`screen:${screen.id}`);
     if (data === null) {
         data = {
