@@ -8,6 +8,20 @@ const config = require('../conf/config');
 
 const { User, Screen, Resource } = db.models;
 
+let getScreenRedisData = async (screen, resource) => {
+    let data = await screenRedis.get(`screen:${screen.id}`);
+    if (data === null) {
+        data = {
+            bind: true,
+            status: utils.isOnline(screen.lastActiveTime),
+            update: 0,
+            url: utils.pathToUrl(resource.path),
+        };
+        await screenRedis.set(`screen:${screen.id}`, data, 1000 * 60 * 60 * 24)
+    }
+    return data;
+};
+
 exports.getBasicInfo = async (id) => {
     let user = await User.findOne({
         where: {
@@ -17,7 +31,7 @@ exports.getBasicInfo = async (id) => {
     let screens = await user.getScreens();
     let activeNumber = 0;
     for (let screen of screens) {
-        if ((await screenRedis.get(`screen:${screen.id}`)).status && utils.isOnline(screen.lastActiveTime)) {
+        if ((await getScreenRedisData(screen, (await screen.getResource()))).status && utils.isOnline(screen.lastActiveTime)) {
             activeNumber ++;
         }
     }
@@ -60,7 +74,7 @@ exports.getScreenList = async (id) => {
     let screens = await user.getScreens();
     let list = [];
     await Promise.all(screens.map(async (screen, index) => {
-        let screenData = await screenRedis.get(`screen:${screen.id}`);
+        let screenData = await getScreenRedisData(screen, (await screen.getResource()));
         let temp = {
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.ID]: screen.id,
             [NAMESPACE.SCREEN_MANAGEMENT.SCREEN.UUID]: screen.uuid,
