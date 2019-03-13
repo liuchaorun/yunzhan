@@ -15,7 +15,7 @@ let getScreenRedisData = async (screen, resource) => {
             bind: true,
             status: utils.isOnline(screen.lastActiveTime),
             update: 0,
-            url: utils.pathToUrl(resource.path),
+            url: resource === null ? null : utils.pathToUrl(resource.path),
         };
         await screenRedis.set(`screen:${screen.id}`, data, 1000 * 60 * 60 * 24)
     }
