@@ -9,13 +9,14 @@ const config = require('../conf/config');
 const { User, Screen, Resource } = db.models;
 
 let getScreenRedisData = async (screen, resource) => {
+    console.log(resource.path);
     let data = await screenRedis.get(`screen:${screen.id}`);
     if (data === null) {
         data = {
             bind: true,
             status: utils.isOnline(screen.lastActiveTime),
             update: 0,
-            url: resource === null ? null : utils.pathToUrl(resource.path),
+            url: resource === null ? null : utils.pathToUrl(path.join(config.filePath.jsonPath, `${resource.id}.json`)),
         };
         await screenRedis.set(`screen:${screen.id}`, data, 1000 * 60 * 60 * 24)
     }
