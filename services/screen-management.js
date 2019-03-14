@@ -115,8 +115,8 @@ exports.unbindResourcePack = async (id, screenIds) => {
             }
             if (await user.hasScreen(screen)) {
                 let resource = await screen.getResource();
-                await screen.removeResource(resource, {transaction: t});
-                let screenData = await screenRedis.get(`screen:${screenId}`);
+                await screen.setResource(null, {transaction: t});
+                let screenData = await getScreenRedisData(screen, resource);
                 screenData.status = false;
                 screenData.url = null;
                 await screenRedis.set(`screen:${screenId}`, screenData, 1000 * 60 * 60 * 24);
