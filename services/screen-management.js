@@ -114,7 +114,7 @@ exports.unbindResourcePack = async (id, screenIds) => {
                 throw new Error('screen not exists');
             }
             if (await user.hasScreen(screen)) {
-                let resource = await secreen.getResource();
+                let resource = await screen.getResource();
                 await resource.removeResource(resource, {transaction: t});
                 let screenData = await screenRedis.get(`screen:${screenId}`);
                 screenData.status = false;
