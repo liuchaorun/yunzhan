@@ -104,7 +104,7 @@ exports.unbindResourcePack = async (id, screenIds) => {
     let returnCode = 200;
     await db.transaction((t) => {
         return Promise.all(screenIds.map(async (screenId) => {
-            let secreen = await Screen.findOne({
+            let screen = await Screen.findOne({
                 where: {
                     id: screenId,
                 }
@@ -122,7 +122,7 @@ exports.unbindResourcePack = async (id, screenIds) => {
                 await screenRedis.set(`screen:${screenId}`, screenData, 1000 * 60 * 60 * 24);
             } else {
                 returnCode = 403;
-                throw new Error('some ')
+                throw new Error('some ');
             }
         }));
     });
