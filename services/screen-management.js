@@ -71,7 +71,9 @@ exports.getScreenList = async (id) => {
             id,
         }
     });
-    let screens = await user.getScreens();
+    let screens = await user.getScreens({
+        order: [['createdAt', 'DESC']]
+    });
     let list = [];
     await Promise.all(screens.map(async (screen, index) => {
         let screenData = await getScreenRedisData(screen, (await screen.getResource()));
@@ -279,7 +281,7 @@ exports.bindResourcePack = async (id, screenIds, resourceId) => {
             }
             if (await user.hasScreen(screen)) {
                 await screen.setResource(resource, {transaction: t});
-                let screenData = await screenRedis.get(`screen:${screen.id}`);
+                let screenData = await getScreenRedisData(screen, resource);
                 screenData.update = (new Date()).getTime();
                 screenData.url = utils.pathToUrl(path.join(config.filePath.jsonPath, `${resource.id}.json`));
                 await screenRedis.set(`screen:${id}`, screenData, 1000 * 60 * 60 * 24);

@@ -102,7 +102,9 @@ exports.getResourcePackList = async (id) => {
             id,
         }
     });
-    let resources = await user.getResources();
+    let resources = await user.getResources({
+        order: [['createdAt', 'DESC']]
+    });
     let data = [];
     for (let resource of resources) {
         let tags = await resource.getTags();
