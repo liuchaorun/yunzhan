@@ -28,12 +28,14 @@ exports.unbindResourcePack = async (ctx) => {
 
 exports.addScreen = async (ctx) => {
     ctx.checkBody(NAMESPACE.SCREEN_MANAGEMENT.SCREEN.UUID).notEmpty();
+    ctx.checkBody(NAMESPACE.SCREEN_MANAGEMENT.SCREEN.NAME).notEmpty();
     if (ctx.returnIfParamsError()) {
         return;
     }
     let userId = ctx.session.userId;
     let screenUuid = ctx.request.body[NAMESPACE.SCREEN_MANAGEMENT.SCREEN.UUID];
-    ctx.returns(await screenManagement.addScreen(userId, screenUuid), {});
+    let screenName = ctx.request.body[NAMESPACE.SCREEN_MANAGEMENT.SCREEN.NAME];
+    ctx.returns(await screenManagement.addScreen(userId, screenUuid, screenName), {});
 };
 
 exports.deleteScreen = async (ctx) => {
@@ -76,4 +78,16 @@ exports.bindResourcePack = async (ctx) => {
     let screenIds = ctx.request.body[NAMESPACE.SCREEN_MANAGEMENT.LIST.SCREEN_ID];
     let resourceId = ctx.request.body[NAMESPACE.RESOURCE_PACK_MANAGEMENT.RESOURCE_PACK.ID];
     ctx.returns(await screenManagement.bindResourcePack(user, screenIds, resourceId), {});
+};
+
+exports.changeScreenInfo = async (ctx) => {
+    ctx.checkBody(NAMESPACE.SCREEN_MANAGEMENT.SCREEN.ID).notEmpty();
+    ctx.checkBody(NAMESPACE.SCREEN_MANAGEMENT.SCREEN.NAME).notEmpty();
+    if (ctx.returnIfParamsError()) {
+        return;
+    }
+    let userId = ctx.session.userId;
+    let screenId = ctx.request.body[NAMESPACE.SCREEN_MANAGEMENT.SCREEN.ID];
+    let screenName = ctx.request.body[NAMESPACE.SCREEN_MANAGEMENT.SCREEN.NAME];
+    ctx.returns(await screenManagement.changeScreenInfo(userId, screenId, screenName), {});
 };

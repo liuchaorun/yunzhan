@@ -129,7 +129,7 @@ exports.unbindResourcePack = async (id, screenIds) => {
     return returnCode;
 };
 
-exports.addScreen = async (id, screenUuid) => {
+exports.addScreen = async (id, screenUuid, screenName) => {
     let screen = await Screen.findOne({
         where: {
             uuid: screenUuid,
@@ -142,6 +142,9 @@ exports.addScreen = async (id, screenUuid) => {
             }
         });
         await user.addScreen(screen);
+        await screen.update({
+            name: screenName,
+        });
         let screenData = await screenRedis.get(`screen:${screen.id}`);
         screenData.bind = true;
         await screenRedis.set(`screen:${screen.id}`, screenData, 1000 * 60 * 60 * 24);
@@ -292,4 +295,27 @@ exports.bindResourcePack = async (id, screenIds, resourceId) => {
         }));
     });
     return returnCode;
+};
+
+exports.changeScreenInfo = async (userId, screenId, screenName) => {
+    let user = await User.findOne({
+        where: {
+            id: userId,
+        }
+    });
+    let screen = await Screen.findOne({
+        where: {
+            id: screenId,
+        }
+    });
+    if (screen === null) {
+        return 403;
+    }
+    if (!await user.hasScreen(screen)) {
+        return 403;
+    }
+    await screen.update({
+        name: screenName,
+    });
+    return 200;
 };

@@ -25,6 +25,15 @@ module.exports = (sequelize, DatType) => {
             type: DatType.INTEGER,
             allowNull: true,
         },
+        /**
+         * 文件状态
+         * 0未删除
+         * 1删除
+         */
+        status: {
+            type: DatType.INTEGER,
+            allowNull: false,
+        },
         size: DatType.INTEGER,
     }, {});
 };

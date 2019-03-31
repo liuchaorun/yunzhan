@@ -24,6 +24,7 @@ module.exports = (router) => {
     router.post(screenManagementPrefix('startScreen'), screenManagement.startScreen);
     router.post(screenManagementPrefix('stopScreen'), screenManagement.stopScreen);
     router.post(screenManagementPrefix('bindResourcePack'), screenManagement.bindResourcePack);
+    router.post(screenManagementPrefix('changeScreenInfo'), screenManagement.changeScreenInfo);
 
     let advertisementManagementPrefix = (url) => prefix(`advertisementManagement/${url}`);
     router.get(advertisementManagementPrefix('getBasicInfo'), advertisementManagement.getBasicInfo);
@@ -32,6 +33,7 @@ module.exports = (router) => {
     router.get(advertisementManagementPrefix('getAdvertisementList'), advertisementManagement.getAdvertisementList);
     router.get(advertisementManagementPrefix('getAdvertisementInfo'), advertisementManagement.getAdvertisementInfo);
     router.post(advertisementManagementPrefix('updateAdvertisementInfo'), advertisementManagement.updateAdvertisementInfo);
+    router.post(advertisementManagementPrefix('deleteAdvertisements'), advertisementManagement.deleteAdvertisements);
 
     let tagManagementPrefix = (url) => prefix(`tagManagement/${url}`);
     router.get(tagManagementPrefix('getBasicInfo'), tagManagement.getBasicInfo);

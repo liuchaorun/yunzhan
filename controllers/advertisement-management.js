@@ -55,3 +55,13 @@ exports.updateAdvertisementInfo = async (ctx) => {
     let userId = ctx.session.userId;
     ctx.returns(await advertisementManagement.updateAdvertisementInfo(userId, fileId, name, qrCodeUrl, qrCodePosition), {});
 };
+
+exports.deleteAdvertisements = async (ctx) => {
+    ctx.checkBody(NAMESPACE.ADVERTISEMENT_MANAGEMENT.LIST.ADVERTISEMENT_ID).notEmpty();
+    if (ctx.returnIfParamsError()) {
+        return;
+    }
+    let advertisementIds = ctx.request.body[NAMESPACE.ADVERTISEMENT_MANAGEMENT.LIST.ADVERTISEMENT_ID];
+    let userId = await ctx.session.userId;
+    ctx.returns(await advertisementManagement.deleteAdvertisements(userId, advertisementIds), {});
+};

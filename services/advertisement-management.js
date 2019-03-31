@@ -47,6 +47,7 @@ exports.uploadVideo = async (id, file, name) => {
         type: 1,
         path: destFilePath,
         size: file.size,
+        status: 0,
     });
 };
 
@@ -70,6 +71,7 @@ exports.uploadImage = async (id, file, qrCodeUrl, qrCodePosition, name) => {
         size: file.size,
         qrCodeUrl,
         qrCodePosition,
+        status: 0,
     });
 };
 
@@ -79,8 +81,11 @@ exports.getAdvertisementList = async (id) => {
             id,
         }
     });
-    let files = await user.getFiles();
-
+    let files = await user.getFiles({
+        where: {
+            status: 0,
+        }
+    });
     let list = [];
     for (let file of files) {
         list.push({
@@ -104,6 +109,7 @@ exports.getAdvertisementInfo = async (id, fileId) => {
     let file = await File.findOne({
         where: {
             id: fileId,
+            status: 0,
         }
     });
     if (file === null) {
@@ -150,6 +156,7 @@ exports.updateAdvertisementInfo = async (id, fileId, name, qrCodeUrl, qrCodePosi
     let file = await File.findOne({
         where: {
             id: fileId,
+            status: 0,
         }
     });
     if (file === null) {
@@ -165,4 +172,41 @@ exports.updateAdvertisementInfo = async (id, fileId, name, qrCodeUrl, qrCodePosi
     } else {
         return 403;
     }
+};
+
+exports.deleteAdvertisements = async (userId, advertisementIds) => {
+    let user = await User.findOne({
+        where: {
+            id: userId
+        }
+    });
+    let returnCode = 200;
+    await db.transaction((t) => {
+        let deletes = advertisementIds.map(async (advertisementId) => {
+            let file = await File.findOne({
+                where: {
+                    id: advertisementId,
+                    status: 0,
+                }
+            });
+            if (file === null) {
+                returnCode = 403;
+                throw new Error('no such file');
+            }
+            if (!await user.hasFile(file)) {
+                returnCode = 403;
+                throw new Error('no rights');
+            }
+            if ((await file.getResources()).length > 0) {
+                returnCode = 403;
+                throw new Error('file is in some resources packs');
+            }
+            await file.update({
+                status: 1,
+            }, {
+                transaction: t
+            });
+        });
+    });
+    return returnCode;
 };
