@@ -44,3 +44,13 @@ exports.changeTagInfo = async (ctx) => {
     let userId = ctx.session.userId;
     ctx.returns(await tagManagement.changeTagInfo(userId, tagId, name));
 };
+
+exports.deleteTags = async (ctx) => {
+    ctx.checkBody(NAMESPACE.TAG_MANAGEMENT.LIST.TAG_ID).notEmpty();
+    if (ctx.returnIfParamsError()) {
+        return;
+    }
+    let tagIds = ctx.request.body[NAMESPACE.TAG_MANAGEMENT.LIST.TAG_ID];
+    let userId = ctx.session.userId;
+    ctx.returns(await tagManagement.deleteTags(userId, tagIds), {});
+};

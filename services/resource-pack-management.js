@@ -416,3 +416,46 @@ exports.changeResourcePackInfo = async (id, resourceId, name, remarks, tagIds, a
         return 403;
     }
 };
+
+exports.deleteResourcePacks = async (id, resourceIds) => {
+    let user = await User.findOne({
+        where: {
+            id,
+        }
+    });
+    let code = 200;
+    await db.transaction((t) => {
+        let d = resourceIds.map(async (resourceId) => {
+            let resource = await Resource.findOne({
+                where: {
+                    id: resourceId,
+                }
+            });
+            if (resource === null) {
+                code = 403;
+                throw new Error('permission denied');
+            }
+            if (!await user.hasResource(resource)) {
+                code = 403;
+                throw new Error('permission denied');
+            }
+            let screen = await resource.getScreen();
+            if (screen !== null) {
+                code = 403;
+                throw new Error('permission denied');
+            }
+            let tags = await resource.getTags();
+            for (let tag of tags) {
+                await resource.removeTag(tag, {transaction: t});
+            }
+            let files = await resource.getFiles();
+            for (let file of files) {
+                await resource.removeFile(file, {transaction: t});
+            }
+            await user.removeResource(resource, {transaction: t});
+            await resource.destroy({transaction: t});
+        });
+        return Promise.all(d);
+    });
+    return code;
+};

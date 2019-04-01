@@ -41,6 +41,7 @@ module.exports = (router) => {
     router.get(tagManagementPrefix('getTagList'), tagManagement.getTagList);
     router.get(tagManagementPrefix('getTagInfo'), tagManagement.getTagInfo);
     router.post(tagManagementPrefix('changeTagInfo'), tagManagement.changeTagInfo);
+    router.post(tagManagementPrefix('deleteTags'), tagManagement.deleteTags);
 
     let resourcePackManagementPrefix = (url) => prefix(`resourcePackManagement/${url}`);
     router.get(resourcePackManagementPrefix('getBasicInfo'), resourcePackManagement.getBasicInfo);
@@ -52,4 +53,5 @@ module.exports = (router) => {
     router.get(resourcePackManagementPrefix('getResourcePackUnbindingTagList'), resourcePackManagement.getResourcePackUnbindingTagList);
     router.get(resourcePackManagementPrefix('getResourcePackUnbindingAdvertisementList'), resourcePackManagement.getResourcePackUnbindingAdvertisementList);
     router.post(resourcePackManagementPrefix('changeResourcePackInfo'), resourcePackManagement.changeResourcePackInfo);
+    router.post(resourcePackManagementPrefix('deleteResourcePacks'), resourcePackManagement.deleteResourcePacks);
 };

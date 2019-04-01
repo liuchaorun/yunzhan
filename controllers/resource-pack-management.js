@@ -94,3 +94,13 @@ exports.changeResourcePackInfo = async (ctx) => {
     let userId = ctx.session.userId;
     ctx.returns(await resourcePackManagement.changeResourcePackInfo(userId, resourceId, name, remarks, tagIds, fileIds));
 };
+
+exports.deleteResourcePacks = async (ctx) => {
+    ctx.checkBody(NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.RESOURCE_PACK_ID);
+    if (ctx.returnIfParamsError()) {
+        return;
+    }
+    let resourceIds = ctx.request.body[NAMESPACE.RESOURCE_PACK_MANAGEMENT.LIST.RESOURCE_PACK_ID];
+    let userId = ctx.session.userId;
+    ctx.returns(await resourcePackManagement.deleteResourcePacks(userId, resourceIds), {});
+};
