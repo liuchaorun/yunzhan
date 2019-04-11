@@ -7,6 +7,6 @@ const exportObj = {
     TAG_MANAGEMENT: require('./TagManagement'),
 };
 
-// module.exports = exportObj;
+ module.exports = exportObj;
 
-export default exportObj;
+//export default exportObj;

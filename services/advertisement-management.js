@@ -181,32 +181,37 @@ exports.deleteAdvertisements = async (userId, advertisementIds) => {
         }
     });
     let returnCode = 200;
-    await db.transaction((t) => {
-        let deletes = advertisementIds.map(async (advertisementId) => {
-            let file = await File.findOne({
-                where: {
-                    id: advertisementId,
-                    status: 0,
+    try {
+        await db.transaction((t) => {
+            let deletes = advertisementIds.map(async (advertisementId) => {
+                let file = await File.findOne({
+                    where: {
+                        id: advertisementId,
+                        status: 0,
+                    }
+                });
+                if (file === null) {
+                    returnCode = 403;
+                    throw new Error('no such file');
                 }
+                if (!await user.hasFile(file)) {
+                    returnCode = 403;
+                    throw new Error('no rights');
+                }
+                if ((await file.getResources()).length > 0) {
+                    returnCode = 403;
+                    throw new Error('file is in some resources packs');
+                }
+                await file.update({
+                    status: 1,
+                }, {
+                    transaction: t
+                });
             });
-            if (file === null) {
-                returnCode = 403;
-                throw new Error('no such file');
-            }
-            if (!await user.hasFile(file)) {
-                returnCode = 403;
-                throw new Error('no rights');
-            }
-            if ((await file.getResources()).length > 0) {
-                returnCode = 403;
-                throw new Error('file is in some resources packs');
-            }
-            await file.update({
-                status: 1,
-            }, {
-                transaction: t
-            });
+            return Promise.all(deletes);
         });
-    });
+    } catch (e) {
+        returnCode = 403;
+    }
     return returnCode;
 };

@@ -439,8 +439,8 @@ exports.deleteResourcePacks = async (id, resourceIds) => {
                 code = 403;
                 throw new Error('permission denied');
             }
-            let screen = await resource.getScreen();
-            if (screen !== null) {
+            let screens = await resource.getScreens();
+            if (screens.length > 0) {
                 code = 403;
                 throw new Error('permission denied');
             }

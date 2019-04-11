@@ -133,27 +133,31 @@ exports.deleteTags = async (id, tagIds) => {
         }
     });
     let code = 200;
-    await db.transaction((t) => {
-        let d = tagIds.map(async (tagId) => {
-            let tag = await Tag.findOne({
-                where: {
-                    id: tagId,
-                }
-            });
-            if (await user.hasTag(tag)) {
-                let resource = await tag.getResources();
-                if (resource === null) {
-                    await user.removeTag(tag, { transaction: t });
+    try {
+        await db.transaction((t) => {
+            let d = tagIds.map(async (tagId) => {
+                let tag = await Tag.findOne({
+                    where: {
+                        id: tagId,
+                    }
+                });
+                if (await user.hasTag(tag)) {
+                    let resource = await tag.getResources();
+                    if (resource.length === 0) {
+                        await user.removeTag(tag, { transaction: t });
+                    } else {
+                        code = 403;
+                        throw new Error('permission denied');
+                    }
                 } else {
                     code = 403;
                     throw new Error('permission denied');
                 }
-            } else {
-                code = 403;
-                throw new Error('permission denied');
-            }
+            });
+            return Promise.all(d);
         });
-        return Promise.all(d);
-    });
+    } catch (e) {
+        code = 403;
+    }
     return code;
 };
